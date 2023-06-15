@@ -13,6 +13,7 @@ ninja install
 # Build and run
 ninja && src/com.github.svandragt.hello-browser --url https://github.com/svandragt/vala-webview
 ```
-![image](https://github.com/svandragt/vala-webview/assets/594871/6c9ca0fe-c8fd-48f3-afab-c11d31dcbcbf)
+![image](https://github.com/svandragt/vala-webview/assets/594871/ad18e3c6-de18-4c74-9965-af2ce1172491)
+
 
 If you leave out the url parameter it will load example.com.
