@@ -2,8 +2,7 @@ using WebKit;
 
 
 public class Hello.Window : Gtk.ApplicationWindow {
-
-    private WebView web_view;
+    public WebView web_view;
 
     public Window(Application app) {
         Object (
@@ -26,8 +25,6 @@ public class Hello.Window : Gtk.ApplicationWindow {
         add(web_view);
 
         show_all();
-        this.web_view.load_uri("https://vandragt.com");
-
     }
 
     // Signal handler for the "clicked" signal of the button
