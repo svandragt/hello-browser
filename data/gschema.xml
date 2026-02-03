@@ -1,6 +1,6 @@
 <?<?xml version="1.0" encoding="UTF-8"?>
 <schemalist>
-	<schema path="/com/github/svandragt/hello-browser/" id="com.github.svandragt.hello-browser">
+	<schema path="/com/github/svandragt/ordner/" id="com.github.svandragt.ordner">
 		<key name="pos-x" type="i">
 			<default>360</default>
 			<summary>Horizontal position</summary>

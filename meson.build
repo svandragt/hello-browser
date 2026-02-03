@@ -1,4 +1,4 @@
-project('com.github.svandragt.hello-browser', 'vala', 'c')
+project('com.github.svandragt.ordner', 'vala', 'c')
 
 subdir('data')
 subdir('src')

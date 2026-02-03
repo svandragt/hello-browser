@@ -4,7 +4,7 @@ public class Application : Gtk.Application {
 
     public Application() {
         Object (
-            application_id: "com.github.svandragt.hello-browser",
+            application_id: "com.github.svandragt.ordner",
             flags: ApplicationFlags.HANDLES_COMMAND_LINE
         );
     }

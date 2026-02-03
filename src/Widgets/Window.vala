@@ -11,12 +11,12 @@ public class Hello.Window : Gtk.ApplicationWindow {
     }
 
     construct {
-        title = "Hello Browser!";
+        title = "Ordner!";
         window_position = Gtk.WindowPosition.CENTER;
         set_default_size(700, 600);
 
         // TODO settings aren't saved yet it seems
-        var settings = new GLib.Settings("com.github.svandragt.hello-browser");
+        var settings = new GLib.Settings("com.github.svandragt.ordner");
         // move(settings.get_int("pos-x"), settings.get_int("pos-y"));
         // set_default_size(settings.get_int("window-width"), settings.get_int("pos-x"));
 
