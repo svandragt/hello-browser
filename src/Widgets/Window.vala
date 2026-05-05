@@ -21,6 +21,7 @@ public class Hello.Window : Gtk.ApplicationWindow {
         this.web_view = new WebView();
         this.web_view.load_changed.connect(onLoadChanged);
         this.web_view.create.connect(onCreate);
+        this.web_view.decide_policy.connect(onDecidePolicy);
         set_child(web_view);
     }
 
@@ -29,14 +30,28 @@ public class Hello.Window : Gtk.ApplicationWindow {
     }
 
     private Gtk.Widget onCreate(WebKit.NavigationAction action) {
-        var uri = action.get_request().get_uri();
-        if (uri != null && uri != "") {
-            try {
-                AppInfo.launch_default_for_uri(uri, null);
-            } catch (Error e) {
-                warning("Failed to open %s in default browser: %s", uri, e.message);
-            }
-        }
+        openExternally(action.get_request().get_uri());
         return null;
+    }
+
+    private bool onDecidePolicy(WebKit.PolicyDecision decision, WebKit.PolicyDecisionType type) {
+        if (type == WebKit.PolicyDecisionType.NEW_WINDOW_ACTION) {
+            var nav = (WebKit.NavigationPolicyDecision) decision;
+            openExternally(nav.get_navigation_action().get_request().get_uri());
+            decision.ignore();
+            return true;
+        }
+        return false;
+    }
+
+    private void openExternally(string? uri) {
+        if (uri == null || uri == "") {
+            return;
+        }
+        try {
+            AppInfo.launch_default_for_uri(uri, null);
+        } catch (Error e) {
+            warning("Failed to open %s in default browser: %s", uri, e.message);
+        }
     }
 }
