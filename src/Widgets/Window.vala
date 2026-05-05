@@ -20,11 +20,23 @@ public class Hello.Window : Gtk.ApplicationWindow {
 
         this.web_view = new WebView();
         this.web_view.load_changed.connect(onLoadChanged);
+        this.web_view.create.connect(onCreate);
         set_child(web_view);
     }
 
-    // Signal handler for the "clicked" signal of the button
     private void onLoadChanged() {
         title = this.web_view.title;
+    }
+
+    private Gtk.Widget onCreate(WebKit.NavigationAction action) {
+        var uri = action.get_request().get_uri();
+        if (uri != null && uri != "") {
+            try {
+                AppInfo.launch_default_for_uri(uri, null);
+            } catch (Error e) {
+                warning("Failed to open %s in default browser: %s", uri, e.message);
+            }
+        }
+        return null;
     }
 }
