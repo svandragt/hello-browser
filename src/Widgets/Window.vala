@@ -19,6 +19,10 @@ public class Hello.Window : Gtk.ApplicationWindow {
         // set_default_size(settings.get_int("window-width"), settings.get_int("window-height"));
 
         this.web_view = new WebView();
+        // Allow JS-driven clipboard writes (execCommand("copy") and the modern
+        // Clipboard API). Off by default in WebKitGTK, which makes right-click
+        // copy-link affordances silently fail in apps that wrap a webview.
+        this.web_view.get_settings().javascript_can_access_clipboard = true;
         this.web_view.load_changed.connect(onLoadChanged);
         this.web_view.create.connect(onCreate);
         this.web_view.decide_policy.connect(onDecidePolicy);
