@@ -12,19 +12,15 @@ public class Hello.Window : Gtk.ApplicationWindow {
 
     construct {
         title = "Hello Browser!";
-        window_position = Gtk.WindowPosition.CENTER;
         set_default_size(700, 600);
 
         // TODO settings aren't saved yet it seems
         var settings = new GLib.Settings("com.github.svandragt.hello-browser");
-        // move(settings.get_int("pos-x"), settings.get_int("pos-y"));
-        // set_default_size(settings.get_int("window-width"), settings.get_int("pos-x"));
+        // set_default_size(settings.get_int("window-width"), settings.get_int("window-height"));
 
         this.web_view = new WebView();
         this.web_view.load_changed.connect(onLoadChanged);
-        add(web_view);
-
-        show_all();
+        set_child(web_view);
     }
 
     // Signal handler for the "clicked" signal of the button

@@ -6,8 +6,8 @@ executable(
     'Widgets/Window.vala',
 
     dependencies: [
-        dependency('gtk+-3.0'),
-        dependency('webkit2gtk-4.0'),
+        dependency('gtk4'),
+        dependency('webkitgtk-6.0'),
     ],
     install: true
 )

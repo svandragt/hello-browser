@@ -15,6 +15,7 @@ public class Application : Gtk.Application {
 
         add_window(main_window);
         main_window.web_view.load_uri(this.url ?? "https://www.example.com");
+        main_window.present();
     }
 
     public override int command_line (ApplicationCommandLine cmd) {
