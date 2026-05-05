@@ -26,6 +26,21 @@ public class Hello.Window : Gtk.ApplicationWindow {
         this.web_view.create.connect(onCreate);
         this.web_view.decide_policy.connect(onDecidePolicy);
         set_child(web_view);
+
+        var refresh = new Gtk.EventControllerKey();
+        refresh.propagation_phase = Gtk.PropagationPhase.CAPTURE;
+        refresh.key_pressed.connect((keyval, keycode, state) => {
+            if (keyval == Gdk.Key.F5) {
+                if ((state & Gdk.ModifierType.SHIFT_MASK) != 0) {
+                    this.web_view.reload_bypass_cache();
+                } else {
+                    this.web_view.reload();
+                }
+                return true;
+            }
+            return false;
+        });
+        ((Gtk.Widget) this).add_controller(refresh);
     }
 
     private void onLoadChanged() {
