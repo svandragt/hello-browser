@@ -28,15 +28,20 @@ public class Application : Gtk.Application {
         // Get the arguments from the command line
         string[] arguments = cmd.get_arguments();
 
-        // Look for the --url parameter and its value
-        for (int i = 0; i < arguments.length - 1; i++) {
-            if (arguments[i] == "--url") {
+        // Accept either `--url <url>` or a bare positional URL argument.
+        for (int i = 1; i < arguments.length; i++) {
+            string arg = arguments[i];
+            if (arg == "--url" && i + 1 < arguments.length) {
                 this.url = arguments[i + 1];
-                // Handle the URL
-                // You can perform actions based on the provided URL here
-                cmd.print("Received URL: " + this.url);
                 break;
             }
+            if (arg.has_prefix("http://") || arg.has_prefix("https://")) {
+                this.url = arg;
+                break;
+            }
+        }
+        if (this.url != null) {
+            cmd.print("Received URL: " + this.url);
         }
 
         // Proceed with the application startup
