@@ -3,7 +3,10 @@ BUILD_DIR ?= build
 APP := com.github.svandragt.hello-browser
 URL ?= https://www.example.com
 
-.PHONY: all build setup install run clean wipe link
+DESKTOP_DIR ?= $(HOME)/.local/share/applications
+ICON ?= web-browser
+
+.PHONY: all build setup install run clean wipe link desktop
 
 all: build
 
@@ -31,3 +34,25 @@ wipe:
 
 clean:
 	rm -rf $(BUILD_DIR)
+
+desktop:
+	@if [ -z "$(NAME)" ] || [ -z "$(URL)" ]; then \
+		echo "usage: make desktop NAME=\"My App\" URL=https://example.org [ICON=icon-name]"; \
+		exit 2; \
+	fi
+	@slug=$$(echo "$(NAME)" | tr '[:upper:] ' '[:lower:]-' | tr -cd 'a-z0-9-'); \
+	file="$(DESKTOP_DIR)/hello-browser-$$slug.desktop"; \
+	mkdir -p "$(DESKTOP_DIR)"; \
+	{ \
+		echo "[Desktop Entry]"; \
+		echo "Type=Application"; \
+		echo "Name=$(NAME)"; \
+		echo "Exec=$(PREFIX)/bin/$(APP) $(URL)"; \
+		echo "Icon=$(ICON)"; \
+		echo "Categories=Network;WebBrowser;"; \
+		echo "Terminal=false"; \
+		echo "StartupNotify=true"; \
+	} > "$$file"; \
+	echo "Wrote $$file"; \
+	command -v update-desktop-database >/dev/null && \
+		update-desktop-database "$(DESKTOP_DIR)" || true
