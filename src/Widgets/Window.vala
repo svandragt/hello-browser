@@ -12,11 +12,10 @@ public class Hello.Window : Gtk.ApplicationWindow {
 
     construct {
         title = "Hello Browser!";
-        set_default_size(700, 600);
 
-        // TODO settings aren't saved yet it seems
         var settings = new GLib.Settings("com.github.svandragt.hello-browser");
-        // set_default_size(settings.get_int("window-width"), settings.get_int("window-height"));
+        settings.bind("window-width", this, "default-width", SettingsBindFlags.DEFAULT);
+        settings.bind("window-height", this, "default-height", SettingsBindFlags.DEFAULT);
 
         this.web_view = new WebView();
         // Allow JS-driven clipboard writes (execCommand("copy") and the modern
