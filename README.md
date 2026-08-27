@@ -16,6 +16,16 @@ hello-browser https://example.org
 
 Both `hello-browser <url>` and `hello-browser --url <url>` are accepted. With no URL it loads `example.com`.
 
+To give a window its own dock identity, pass `--class <id>` (or the alias `--app-id <id>`):
+
+```shell
+hello-browser --class com.github.svandragt.hello-browser.myapp https://my-app.local:8000/
+```
+
+The value sets both the X11 WM_CLASS and the Wayland app_id, so GNOME can match the window against a launcher's `StartupWMClass` and group it under its own icon. Each distinct `--class` is a separate instance, so different sites run as independent apps. Without the flag, the default id is used.
+
+Add `--single-instance` to reuse one window per site: relaunching the same `--class` raises the existing window instead of opening another. Without it, each launch opens a new window.
+
 When running from `$HOME/.local`, `XDG_DATA_DIRS` must include `$HOME/.local/share` so the GSettings schema is discoverable. `make run` sets this for you.
 
 ## Site launcher
@@ -27,6 +37,8 @@ make desktop NAME="My App" URL=https://my-app.local:8000/ [ICON=icon-name]
 ```
 
 This writes `~/.local/share/applications/hello-browser-<slug>.desktop` and refreshes the desktop database. The entry then appears in the apps menu and launches the site in its own `hello-browser` window.
+
+Each generated launcher gets a distinct `--class` (`com.github.svandragt.hello-browser.<slug>`) and a matching `StartupWMClass`, so GNOME groups its windows under that launcher's own dock icon rather than lumping every site together.
 
 ## Dependencies
 
