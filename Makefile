@@ -47,11 +47,12 @@ desktop:
 		echo "[Desktop Entry]"; \
 		echo "Type=Application"; \
 		echo "Name=$(NAME)"; \
-		echo "Exec=$(PREFIX)/bin/$(APP) $(URL)"; \
+		echo "Exec=$(PREFIX)/bin/$(APP) --class $(APP).$$slug $(URL)"; \
 		echo "Icon=$(ICON)"; \
 		echo "Categories=Network;WebBrowser;"; \
 		echo "Terminal=false"; \
 		echo "StartupNotify=true"; \
+		echo "StartupWMClass=$(APP).$$slug"; \
 	} > "$$file"; \
 	echo "Wrote $$file"; \
 	command -v update-desktop-database >/dev/null && \
