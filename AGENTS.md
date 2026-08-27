@@ -51,9 +51,11 @@ Versions are tracked only as git tags and GitHub releases; there is no version s
 To cut a release from an up-to-date `main`:
 
 ```shell
-git tag 0.3.0                    # lightweight tag, matching existing tags
+git tag -s 0.3.0 -m 0.3.0        # signed: repo config sets tag.gpgsign
 git push origin 0.3.0
-gh release create 0.3.0 --title 0.3.0 --notes "..."
+gh release create 0.3.0 --title 0.3.0 --notes-file notes.md
 ```
 
-Group the notes under `## Features`, `## Fixes`, and `## Tooling`, and derive them from `git log <previous-tag>..HEAD`.
+The repo signs tags (`tag.gpgsign`), so a plain `git tag 0.3.0` fails with "no tag message" — always pass `-s -m`. If you run `gh release create` for a tag that doesn't exist yet, `gh` creates an unsigned tag on the remote, so tag locally first when you want it signed.
+
+The app is used by both regular users and developers, so split the notes: put user-facing changes under `## Features` and `## Fixes`, and developer- or build-facing changes under `## For developers`. Derive them from `git log <previous-tag>..HEAD`.
