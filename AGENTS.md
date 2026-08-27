@@ -43,3 +43,17 @@ Three Vala source files, each one role:
 The GSettings schema (`data/gschema.xml`) defines `pos-x`, `pos-y`, `window-width`, `window-height` for persisting window geometry. `Window.construct` binds `window-width` and `window-height` to the window's `default-width`/`default-height`, so size persists across runs. `pos-x`/`pos-y` are unused — GTK4 doesn't let apps set their own window position. The schema must be installed because `Window.construct` instantiates `GLib.Settings(...)` unconditionally.
 
 When adding new `.vala` files, list them explicitly in `src/meson.build` under the `executable(...)` sources — there is no glob.
+
+## Releasing
+
+Versions are tracked only as git tags and GitHub releases; there is no version string in `meson.build`. Use `MAJOR.MINOR.PATCH`: bump the minor for new features, the patch for fixes only, the major for a breaking change.
+
+To cut a release from an up-to-date `main`:
+
+```shell
+git tag 0.3.0                    # lightweight tag, matching existing tags
+git push origin 0.3.0
+gh release create 0.3.0 --title 0.3.0 --notes "..."
+```
+
+Group the notes under `## Features`, `## Fixes`, and `## Tooling`, and derive them from `git log <previous-tag>..HEAD`.
