@@ -34,15 +34,24 @@ Declared in `src/meson.build`: `gtk4` and `webkitgtk-6.0`. System dev packages f
 
 ## Architecture
 
-Three Vala source files, each one role:
+Four Vala source files, each one role:
 
-- `src/Main.vala` — entry point. Scans argv for `--class` / `--app-id` and passes the value to the `Application` constructor, then calls `run`. This flag is read here, not in `command_line`, because it sets the `application_id`, which is fixed at construction — before `run`.
-- `src/Application.vala` — `Gtk.Application` subclass with `HANDLES_COMMAND_LINE`. The constructor uses the `--class` value (validated with `GLib.Application.id_is_valid`, falling back to the default `com.github.svandragt.hello-browser` on an invalid or missing value) as both the `application_id` and `prgname`. `application_id` drives the X11 WM_CLASS res_class; `prgname` drives the WM_CLASS res_name and the Wayland app_id. A distinct `--class` therefore yields a separate instance with its own window identity. `_command_line` parses `--url <value>` (or a bare URL) and the `--single-instance` flag, then calls `activate()`. With `--single-instance`, `activate` raises the existing window if one exists; otherwise it creates a `Hello.Window`, calls `web_view.load_uri(...)`, and `present()`s it. Flow: `command_line` → set `url` and flags → `activate` → window construct → `load_uri` → `present`. (GTK4 has no `show_all()`, so `present()` is what actually makes the window appear.)
-- `src/Widgets/Window.vala` — `Hello.Window : Gtk.ApplicationWindow` owns the `WebKit.WebView`, attached via `set_child(web_view)` (GTK4 single-child container API). The window title is updated from `web_view.title` via the `load_changed` signal (so the GTK title tracks the page title as it loads).
+- `src/Args.vala` — `Hello.Args`, the pure argument and title logic, deliberately free of GTK so the tests can link it without a display. Holds `find_class`, `resolve_app_id`, `parse` and `window_title`. Callers keep the GTK plumbing; the decisions live here.
+- `src/Main.vala` — entry point. Reads `--class` / `--app-id` through `Hello.Args.find_class` and passes the value to the `Application` constructor, then calls `run`. This flag is read here, not in `command_line`, because it sets the `application_id`, which is fixed at construction — before `run`.
+- `src/Application.vala` — `Gtk.Application` subclass with `HANDLES_COMMAND_LINE`. The constructor resolves the `--class` value through `Hello.Args.resolve_app_id` (validated with `GLib.Application.id_is_valid`, falling back to the default `com.github.svandragt.hello-browser` on an invalid or missing value) as both the `application_id` and `prgname`. `application_id` drives the X11 WM_CLASS res_class; `prgname` drives the WM_CLASS res_name and the Wayland app_id. A distinct `--class` therefore yields a separate instance with its own window identity. `_command_line` hands argv to `Hello.Args.parse`, which reads `--url <value>` (or a bare URL) and the `--single-instance` flag, then calls `activate()`. With `--single-instance`, `activate` raises the existing window if one exists; otherwise it creates a `Hello.Window`, calls `web_view.load_uri(...)`, and `present()`s it. Flow: `command_line` → set `url` and flags → `activate` → window construct → `load_uri` → `present`. (GTK4 has no `show_all()`, so `present()` is what actually makes the window appear.)
+- `src/Widgets/Window.vala` — `Hello.Window : Gtk.ApplicationWindow` owns the `WebKit.WebView`, attached via `set_child(web_view)` (GTK4 single-child container API). The window title comes from a `bind_property` on `web_view.title` with `SYNC_CREATE`, so it follows `notify::title` and tracks later `document.title` rewrites. The transform runs the value through `Hello.Args.window_title`, which substitutes the default name for the empty string WebKit sets at `LOAD_STARTED`. Sampling the title on `load_changed` instead leaves the title bar blank: that signal is the navigation lifecycle, and the title is not part of it.
 
 The GSettings schema (`data/gschema.xml`) defines `pos-x`, `pos-y`, `window-width`, `window-height` for persisting window geometry. `Window.construct` binds `window-width` and `window-height` to the window's `default-width`/`default-height`, so size persists across runs. `pos-x`/`pos-y` are unused — GTK4 doesn't let apps set their own window position. The schema must be installed because `Window.construct` instantiates `GLib.Settings(...)` unconditionally.
 
 When adding new `.vala` files, list them explicitly in `src/meson.build` under the `executable(...)` sources — there is no glob.
+
+## Tests
+
+`make test` (or `meson test -C build`) runs `tests/ArgsTest.vala` under GLib's GTest. The test binary links `src/Args.vala` — shared with the app through the `args_sources` variable in `src/meson.build` — plus glib and gio only, so it needs no display and no WebKit.
+
+To keep logic testable, put it in `Hello.Args` and call it from the GTK classes. Anything that needs a `Gtk.Widget` or a `WebView` is out of reach of this harness.
+
+`Test.init` makes `g_warning` fatal. When code under test is meant to warn, claim it with `Test.expect_message(...)` before the call and `Test.assert_expected_messages()` after — don't lower the log level to keep the harness quiet.
 
 ## Releasing
 

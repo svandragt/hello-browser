@@ -11,6 +11,7 @@ A `Makefile` wraps the meson/ninja workflow. Defaults install under `$HOME/.loca
 ```shell
 make install                      # build + install binary, compile GSettings schema
 make link                         # symlink ~/bin/hello-browser -> installed binary
+make test                         # run the unit tests
 hello-browser https://example.org
 ```
 

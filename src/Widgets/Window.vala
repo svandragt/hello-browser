@@ -22,7 +22,10 @@ public class Hello.Window : Gtk.ApplicationWindow {
         // Clipboard API). Off by default in WebKitGTK, which makes right-click
         // copy-link affordances silently fail in apps that wrap a webview.
         this.web_view.get_settings().javascript_can_access_clipboard = true;
-        this.web_view.load_changed.connect(onLoadChanged);
+        this.web_view.bind_property("title", this, "title", GLib.BindingFlags.SYNC_CREATE, (b, from, ref to) => {
+            to = Hello.Args.window_title((string) from);
+            return true;
+        });
         this.web_view.create.connect(onCreate);
         this.web_view.decide_policy.connect(onDecidePolicy);
         set_child(web_view);
@@ -41,10 +44,6 @@ public class Hello.Window : Gtk.ApplicationWindow {
             return false;
         });
         ((Gtk.Widget) this).add_controller(refresh);
-    }
-
-    private void onLoadChanged() {
-        title = this.web_view.title;
     }
 
     private Gtk.Widget onCreate(WebKit.NavigationAction action) {

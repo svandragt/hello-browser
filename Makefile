@@ -6,7 +6,7 @@ URL ?= https://www.example.com
 DESKTOP_DIR ?= $(HOME)/.local/share/applications
 ICON ?= web-browser
 
-.PHONY: all build setup install run clean wipe link desktop
+.PHONY: all build setup install run test clean wipe link desktop
 
 all: build
 
@@ -17,6 +17,9 @@ setup: $(BUILD_DIR)/build.ninja
 
 build: setup
 	ninja -C $(BUILD_DIR)
+
+test: build
+	meson test -C $(BUILD_DIR) --print-errorlogs
 
 install: build
 	ninja -C $(BUILD_DIR) install

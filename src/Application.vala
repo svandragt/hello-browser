@@ -4,14 +4,7 @@ public class Application : Gtk.Application {
     bool single_instance = false;
 
     public Application(string? app_id = null) {
-        string id = "com.github.svandragt.hello-browser";
-        if (app_id != null) {
-            if (GLib.Application.id_is_valid(app_id)) {
-                id = app_id;
-            } else {
-                warning("Ignoring invalid --class '%s', using default id", app_id);
-            }
-        }
+        string id = Hello.Args.resolve_app_id(app_id);
         Object (
             application_id: id,
             flags: ApplicationFlags.HANDLES_COMMAND_LINE
@@ -52,16 +45,11 @@ public class Application : Gtk.Application {
         // Accept `--url <url>` or a bare positional URL, plus the optional
         // --single-instance flag. Scan the whole line so flag order doesn't
         // matter (a .desktop Exec may list them either way).
-        for (int i = 1; i < arguments.length; i++) {
-            string arg = arguments[i];
-            if (arg == "--single-instance") {
-                this.single_instance = true;
-            } else if (arg == "--url" && i + 1 < arguments.length) {
-                this.url = arguments[i + 1];
-            } else if (arg.has_prefix("http://") || arg.has_prefix("https://")) {
-                this.url = arg;
-            }
-        }
+        string? url;
+        bool single_instance;
+        Hello.Args.parse(arguments, out url, out single_instance);
+        this.url = url;
+        this.single_instance = single_instance;
         if (this.url != null) {
             cmd.print("Received URL: " + this.url);
         }

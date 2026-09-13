@@ -1,5 +1,8 @@
+args_sources = files('Args.vala')
+
 executable(
     meson.project_name(),
+    args_sources,
     'Main.vala',
     'Application.vala',
 
